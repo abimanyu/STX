@@ -34,7 +34,7 @@ $(document).ready(function(){
 </script>
 <script src=\"../datatables.js\"></script>
 ";
-$sql -> db_Select("DCMS_kain K", "K.KAIN_ID, K.kain, K.code", "GROUP BY K.kain");
+$sql -> db_Select("DCMS_db_kain K", "K.KAIN_ID, K.kain, K.code", "GROUP BY K.kain");
 $total_items = $sql -> db_Rows();
 ?>
 <section role="main" class="content-body">

@@ -143,8 +143,9 @@ $total_items =  $sql->db_Rows();
 					<th width="10%" class="text-center">#SP</th>
 					<th width="15%">Tanggal SP</th>
 					<th width="215px" class="text-center">Status</th>
+					<th width="15%">Warna</th>
 					<th>Customer</th>
-					<th width="150px" class="text-center"></th>
+					<th width="18%" class="text-center"></th>
 				</tr>
 			</thead>
 			<tbody id="isi_table">
@@ -154,17 +155,30 @@ $total_items =  $sql->db_Rows();
 				    '2'=>array('<a class="btn btn-xs btn-success" disabled><i class="fa fa-check"></i> Confirmed</a>'),
 				    '3'=>array('<a class="btn btn-xs btn-default" disabled><i class="fa fa-times"></i> Canceled</a>')				    
 					);
-
+			$sql2 = new db;
 			while($row = $sql-> db_Fetch()){
 
 				$customer = DISPLAY_CUSTOMER( $row['c_name'], $row['c_corp'] );
+				$sql2 -> db_Select("DCMS_po_items I LEFT JOIN DCMS_db_items DB ON DB.ITEM_ID=I.ITEM_ID LEFT JOIN DCMS_db_warna W ON DB.WARNA_ID=W.WARNA_ID", 
+									"I.ITEM_ID, DB.WARNA_ID, W.warna, W.code", 
+									"WHERE I.PO_ID='".$row['PO_ID']."' ");
+				//GET_CODE_WARNA
 
 				echo "
 				<tr>
-					<td><strong><a href='./invoice?landing=".$row['PO_ID']."'>SJJ-".$row['no_sp']."</a></strong></td>
+					<td><strong><a href='./timeline?landing=".$row['PO_ID']."' rel=\"tooltip\" data-placement=\"top\" data-original-title=\"SJJ-".$row['no_sp']."\">SJJ-".$row['no_sp']."</a></strong></td>
 					<td>".date("d M Y", strtotime($row['tgl_sp']))."</td>
-					<td class='text-center'><div id=\"confirm-div\" data-id=\"".$row['PO_ID']."\">".$action[ $row['status'] ][0]."
-						".($row['status_date'] !='0000-00-00 00:00:00' ? "<small>&mdash;<cite title=\"Magazine X\">"._ago($row['status_date'])." yg lalu</cite></small>" : "")."</div>
+					<td class='text-center'><div id=\"confirm-".$row['PO_ID']."\" data-id=\"".$row['PO_ID']."\">".$action[ $row['status'] ][0]."
+						".($row['status_date'] !='0000-00-00 00:00:00' ? "<small>&mdash;<cite>"._ago($row['status_date'])." yg lalu</cite></small>" : "")."</div>
+					</td>
+					<td>";
+					while($row2= $sql2-> db_Fetch()){
+						if(!empty($row2['code'])) {
+							$code_warna = $row2['code']; $border=$code_warna; $text_col = "&nbsp;";
+						}else {$code_warna = "white"; $border="gray;color:#000"; $text_col = "?";}
+						echo "<a rel=\"tooltip\" data-placement=\"top\" data-original-title=\"".$row2['warna']."\" class=\"btn btn-xs\" style=\"border-color: ".$border.";background-color: ".$code_warna.";\">".$text_col."</a>\n";
+					}
+				echo "
 					</td>
 					<td><span class='ellipsis'>".$customer."</span></td>
 					<td class='text-center'>

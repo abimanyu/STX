@@ -177,19 +177,6 @@
 		});
 	});
 
-    /*
-    //UNTUK MENGHITUNG SUM
-    function calculateSum() {
-	    var sum=0;
-	        $(".format_angka#roll").each(function() {
-	        if(!isNaN(this.value) && this.value.length!=0) {
-	            sum+=parseFloat(this.value);
-	        }
-	    });
-	    $("#total").html(sum.toFixed(0));
-	}
-	*/
-
 	$(".ellipsis").text(function(index, currentText) {
 		if(currentText.length > 25)	{
 		  currentText = currentText.substr(0,25) + "...";

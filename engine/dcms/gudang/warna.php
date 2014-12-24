@@ -131,15 +131,13 @@ $(document).ready(function(){
 						</thead>
 						<tbody id="isi_table">
 						<?php
-						//include ("../DCMS-function.php");
 
-						$sql -> db_Select("DCMS_stock S LEFT JOIN DCMS_kain K ON S.KAIN_ID=K.KAIN_ID LEFT JOIN DCMS_warna W ON S.WARNA_ID=W.WARNA_ID", 
+						$sql -> db_Select("DCMS_stock S LEFT JOIN DCMS_db_kain K ON S.KAIN_ID=K.KAIN_ID LEFT JOIN DCMS_db_warna W ON S.WARNA_ID=W.WARNA_ID", 
 								"S.STOCK_ID, S.roll, S.jar, S.kg, S.last_update, K.kain, W.warna", 
 								"WHERE `type`='c' GROUP BY S.STOCK_ID");
 						$i=1;
 						while($row = $sql-> db_Fetch()){
 
-							//$customer = DISPLAY_CUSTOMER( $row['c_name'], $row['c_corp'] );
 							echo "
 							<tr>
 								<td>".$i++."</td>

@@ -37,13 +37,11 @@ $(document).ready(function(){
 /**
 	Form Submit
 */
-include ("../wms-function.php");
+include ("../dcms-function.php");
 
 if(isset($_POST['form_submit'])) {
 	$NO_SP = str_replace("SBJ-", "", $_POST['no_sp']);
-	$TGL_SP = explode("/", $_POST['tgl_sp']);
-	$TGL_SP = $TGL_SP[2]."-".$TGL_SP[0]."-".$TGL_SP[1];
-	$NOW = date("Y-m-d H:i:s");
+	$TANGGAL_SP = date("Y-m-d", strtotime($_POST['tgl_sp']));
 
 	//costumer
 	if(!empty($_POST['customer_id'])) {
@@ -59,54 +57,62 @@ if(isset($_POST['form_submit'])) {
 	}
 	$warehouse_code = get_user_option("U_WAREHOUSE");
 
-	$SBJ_ID = $sql -> db_Insert("WMS_sbj", "'', '".$TGL_SP."', '".$NO_SP."', '".mysql_real_escape_string( $_POST['keterangan'] )."', '".$CID."','".$warehouse_code."','".U_ID."', '".$NOW."' ");
+	//status : 1=pending, 2=process, 3=cancel
+	$SBJ_ID = $sql -> db_Insert("DCMS_sbj", "'', '".$TANGGAL_SP."', '".$NO_SP."', '".mysql_real_escape_string( $_POST['keterangan'] )."', '".$CID."', '1', '', '".$warehouse_code."','".U_ID."', NOW() ");
 
 	//jika berhasil, update LAST_NO_SP
 	if($SBJ_ID) {
 		$sql -> db_Update("3E_taxonomy", "`value`='".$NO_SP."' WHERE `type`='warehouse' AND `key`='sbj-last' ");
 	}
+	
+	//Relasi surat
+	if(!empty($_POST['relations'])) {
+		$rel_items = count($_POST['relations']);
+		for($r=0; $r < $rel_items; $r++){
+			$TO_ID = $_POST['relations'][$r];
+			$sql -> db_Insert("DCMS_relations", "'', 'sbj', '".$SBG_ID."', 'po', '".$TO_ID."', NOW(), 'Beli Barang Jadi' ");
+		}
+	}
 
-	//AYO BERMAIN DI STOK :)
 	$Dyn = count($_POST['dyn']);
 	for($x=0; $x<$Dyn; $x++){
 		
-		$CEK_ID_KAIN = GET_ID_KAIN( $_POST['jeniskain'][$x] );
-		if( $CEK_ID_KAIN ) {//jika jenis kain tersedia di database
-			$KAIN_ID = $CEK_ID_KAIN;
-		}
-		else {//jika ga ada di database, tambah data kain
-			$KAIN_ID = $sql -> db_Insert("WMS_kain", "'', '".mysql_real_escape_string($_POST['jeniskain'][$x])."', '', '' ");
-		}
-
-		$CEK_ID_WARNA = GET_ID_WARNA( $_POST['warna'][$x] );
-		if( $CEK_ID_WARNA ) {//jika warna tersedia di database
-			$WARNA_ID = $CEK_ID_WARNA;
-		}
-		else {//jika ga ada di database, tambah data warna
-			$WARNA_ID = $sql -> db_Insert("WMS_warna", "'', '".$_POST['warna'][$x]."', '', '' ");
+		if(!empty($_POST['jeniskain'][$x])) {
+			$CEK_ID_KAIN = GET_ID_KAIN( $_POST['jeniskain'][$x] );
+			
+			//jika jenis kain tersedia di database
+			if( $CEK_ID_KAIN ) {
+				$KAIN_ID = $CEK_ID_KAIN;
+			}
+			//jika ga ada di database, tambah data kain
+			else {
+				$KAIN_ID = $sql -> db_Insert("DCMS_db_kain", "'', '".mysql_real_escape_string($_POST['jeniskain'][$x])."', '' ");
+			}
 		}
 
-		$ROLL = HANYA_ANGKA( $_POST['roll'][$x] );
-		$JAR = HANYA_ANGKA( $_POST['jar'][$x] );
-		$KG = HANYA_ANGKA( $_POST['kg'][$x] );
-		$HARGA = HANYA_ANGKA( $_POST['harga'][$x] );
+		if(!empty($_POST['warna'][$x])) {
+			$CEK_ID_WARNA = GET_ID_WARNA( $_POST['warna'][$x] );
+			
+			//jika warna tersedia di database
+			if( $CEK_ID_WARNA ) {
+				$WARNA_ID = $CEK_ID_WARNA;
+			}
+			//jika ga ada di database, tambah data warna
+			else {
+				$WARNA_ID = $sql -> db_Insert("DCMS_db_warna", "'', '".$_POST['warna'][$x]."', '' ");
+			}
+		}
 
-		$sql -> db_Insert("WMS_sbj_items", "'', '".$SBJ_ID."', '".$ROLL."', '".$JAR."', '".$KG."', '".$KAIN_ID."', '".$WARNA_ID."', 
+		if(!empty( $_POST['jeniskain'][$x] ) || !empty( $_POST['warna'][$x]) ) {
+			$ROLL = HANYA_ANGKA( $_POST['roll'][$x] );
+			$JAR = HANYA_ANGKA( $_POST['jar'][$x] );
+			$KG = HANYA_ANGKA( $_POST['kg'][$x] );
+			$HARGA = HANYA_ANGKA( $_POST['harga'][$x] );
+
+			$sql -> db_Insert("DCMS_sbj_items", "'', '".$SBJ_ID."', '".$ROLL."', '".$JAR."', '".$KG."', '".$KAIN_ID."', '".$WARNA_ID."', 
 					'".$_POST['mesin'][$x]."', '".$_POST['setting'][$x]."', '".$_POST['gramasi'][$x]."', '".$HARGA."' ");
 
-		//add stock
-		$CEK_ID_STOCK = GET_ID_STOCK("c", $KAIN_ID, $WARNA_ID);
-		if( $CEK_ID_STOCK ) {
-			$STOCK_ID = $CEK_ID_STOCK;
-			UPDATE_STOCK( $STOCK_ID, $ROLL, $JAR, $KG );
 		}
-		else {
-			$STOCK_ID = $sql -> db_Insert("WMS_stock", "'','c', '".$KAIN_ID."', '".$WARNA_ID."', '".$ROLL."', '".$JAR."', '".$KG."', '".$warehouse_code."', '".$NOW."' ");
-		}
-		//add stock log
-		$sql -> db_Insert("WMS_stock_log", "'', '".$STOCK_ID."', 'in', 'c', '".$KAIN_ID."', '".$WARNA_ID."', '".$ROLL."', '".$JAR."', '".$KG."', 
-					'sbj', '".$SBJ_ID."', '".U_ID."', '".$warehouse_code."', '".$NOW."' ");
-
 	}
 
 	return _redirect ( "./invoice?landing=".$SBJ_ID );
@@ -203,7 +209,20 @@ $LAST_NO_SP = get_option("warehouse", "sbj-last");
 						<div class="col-md-9">
 							<textarea class="form-control" rows="3" name="alamat" id="alamat" data-plugin-textarea-autosize></textarea>
 						</div>
-					</div>	
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">PO Terkait</label>
+						<div class="col-md-6">
+							<select name="relations[]" multiple data-plugin-selectTwo class="form-control populate">
+							<?php
+							$sql -> db_Select("DCMS_po G", "G.PO_ID, G.tgl_sp, G.no_sp, G.status, G.status_date", "WHERE G.`status`='2' GROUP BY G.no_sp");
+							while($row = $sql-> db_Fetch()){
+								echo "<option value=\"".$row['PO_ID']."\">SJJ-".$row['no_sp']."</option>";
+							}
+							?>
+							</select>
+						</div>
+					</div>
 				</div>
 				<footer class="panel-footer">
 					<button type="submit" name="form_submit" value="1" class="btn btn-success"><i class="fa fa-paper-plane"></i> Submit </button>

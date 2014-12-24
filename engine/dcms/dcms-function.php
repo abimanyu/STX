@@ -11,24 +11,45 @@
 
 function GET_ID_KAIN( $search ){
     global $sql;
-    $sql -> db_Select("DCMS_kain","KAIN_ID", "WHERE `kain` like '".$search."' LIMIT 1");
+    $sql -> db_Select("DCMS_db_kain","KAIN_ID", "WHERE `kain` like '".$search."' LIMIT 1");
     $result = $sql -> db_Fetch();
     return $result[0];
 }
 
 function GET_ID_WARNA( $search ){
     global $sql;
-    $sql -> db_Select("DCMS_warna","WARNA_ID", "WHERE `warna` like '".$search."' LIMIT 1");
+    $sql -> db_Select("DCMS_db_warna","WARNA_ID", "WHERE `warna` like '".$search."' LIMIT 1");
     $result = $sql -> db_Fetch();
     return $result[0];
 }
 
+function GET_CODE_WARNA( $search ){
+    global $sql;
+    $sql -> db_Select("DCMS_db_warna","code", "WHERE `WARNA_ID`='".$search."' LIMIT 1");
+    $result = $sql -> db_Fetch();
+    return $result[0];
+}
+
+function GET_ID_ITEMS( $KAIN_ID="", $WARNA_ID="" ){
+    global $sql;
+    if($WARNA_ID != "") {
+        $sql -> db_Select("DCMS_db_items","ITEM_ID", "WHERE `type`='w' AND `KAIN_ID`='".$KAIN_ID."' AND `WARNA_ID`='".$WARNA_ID."' LIMIT 1");
+    }
+    else {
+        $sql -> db_Select("DCMS_db_items","ITEM_ID", "WHERE `type`='g' AND `KAIN_ID`='".$KAIN_ID."' LIMIT 1");
+    }
+    $result = $sql -> db_Fetch();
+    return $result[0];
+}
+
+/*
 function GET_ID_STOCK( $type, $KAIN_ID="", $WARNA_ID="" ){
     global $sql;
     $sql -> db_Select("DCMS_stock","STOCK_ID", "WHERE `type`='".$type."' AND `KAIN_ID`='".$KAIN_ID."' AND `WARNA_ID`='".$WARNA_ID."' LIMIT 1");
     $result = $sql -> db_Fetch();
     return $result[0];
 }
+*/
 
 function UPDATE_STOCK( $STOCK_ID, $plus_roll="0", $plus_jar="0", $plus_kg="0" ){
     global $sql;

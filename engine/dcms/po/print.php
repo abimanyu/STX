@@ -73,8 +73,8 @@ $result = $sql -> db_Fetch();
 					</thead>
 					<tbody>
 						<?php
-						$sql -> db_Select("DCMS_po_items I LEFT JOIN DCMS_kain K ON I.KAIN_ID=K.KAIN_ID 
-								LEFT JOIN DCMS_warna W ON I.WARNA_ID=W.WARNA_ID", 
+						$sql -> db_Select("DCMS_po_items I LEFT JOIN DCMS_db_kain K ON I.KAIN_ID=K.KAIN_ID 
+								LEFT JOIN DCMS_db_warna W ON I.WARNA_ID=W.WARNA_ID", 
 								"I.*, K.kain, W.warna", 
 								"WHERE I.PO_ID='".$ID."' GROUP BY I.POI_ID");
 						

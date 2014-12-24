@@ -12,7 +12,7 @@
 @include (c_THEMES."conf.php");
 
 $ID = $_GET['c'];
-$sql -> db_Select("WMS_sbj G LEFT JOIN customer C ON G.C_ID=C.CID", 
+$sql -> db_Select("DCMS_sbj G LEFT JOIN customer C ON G.C_ID=C.CID", 
 					"G.SBJ_ID, G.tgl_sp, G.no_sp, G.keterangan, C.c_name, C.c_corp, C.c_alamat", 
 					"WHERE G.SBJ_ID='".$ID."' LIMIT 1");
 $result = $sql -> db_Fetch();
@@ -74,8 +74,8 @@ $result = $sql -> db_Fetch();
 					</thead>
 					<tbody>
 						<?php
-						$sql -> db_Select("WMS_sbj_items I LEFT JOIN WMS_kain K ON I.KAIN_ID=K.KAIN_ID 
-								LEFT JOIN WMS_warna W ON I.WARNA_ID=W.WARNA_ID", 
+						$sql -> db_Select("DCMS_sbj_items I LEFT JOIN DCMS_db_kain K ON I.KAIN_ID=K.KAIN_ID 
+								LEFT JOIN DCMS_db_warna W ON I.WARNA_ID=W.WARNA_ID", 
 								"I.*, K.kain, W.warna", 
 								"WHERE I.SBJ_ID='".$ID."' GROUP BY I.SBJI_ID");
 						
@@ -92,7 +92,7 @@ $result = $sql -> db_Fetch();
 
 							echo "
 							<tr>
-								<td><a href='#".$row['SBGI_ID']."'>".$row['SBGI_ID']."</a></td>
+								<td><a href='#".$row['SBJI_ID']."'>".$row['SBJI_ID']."</a></td>
 								<td class=\"text-center\">".$banyak_display."</td>
 								<td class=\"text-semibold text-dark\">".$row['kain']." ".$row['warna']."</td>
 								<td class=\"text-center text-uppercase\">".$row['mesin']."</td>

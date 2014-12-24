@@ -42,7 +42,6 @@ include ("../dcms-function.php");
 if(isset($_POST['form_submit'])) {
 	$NO_SP = str_replace("SBG-", "", $_POST['no_sp']);
 	$TANGGAL_SP = date("Y-m-d", strtotime($_POST['tgl_sp']));
-	//$NOW = date("Y-m-d H:i:s");
 
 	//costumer
 	if(!empty($_POST['customer_id'])) {
@@ -58,6 +57,7 @@ if(isset($_POST['form_submit'])) {
 	}
 	$warehouse_code = get_user_option("U_WAREHOUSE");
 
+	//status : 1=pending, 2=process, 3=cancel
 	$SBG_ID = $sql -> db_Insert("DCMS_sbg", "'', '".$TANGGAL_SP."', '".$NO_SP."', '".TEXTAREA( htmlentities( $_POST['keterangan']) )."', '".$CID."', '1', '', '".$warehouse_code."','".U_ID."', NOW() ");
 
 	//jika berhasil, update LAST_NO_SP
@@ -67,16 +67,13 @@ if(isset($_POST['form_submit'])) {
 
 	//Relasi surat
 	if(!empty($_POST['relations'])) {
-		//$rel_items = explode (",", $_POST['relations']);
 		$rel_items = count($_POST['relations']);
 		for($r=0; $r < $rel_items; $r++){
-			//$TO_ID = str_replace("SJJ-", "", $rel_items[$r]);
 			$TO_ID = $_POST['relations'][$r];
 			$sql -> db_Insert("DCMS_relations", "'', 'sbg', '".$SBG_ID."', 'po', '".$TO_ID."', NOW(), 'Beli Grey' ");
 		}
 	}
 
-	//AYO BERMAIN DI STOK :)
 	$Dyn = count($_POST['dyn']);
 	for($x=0; $x<$Dyn; $x++){
 		
@@ -86,7 +83,7 @@ if(isset($_POST['form_submit'])) {
 				$KAIN_ID = $CEK_ID_KAIN;
 			}
 			else {//jika ga ada di database, tambah data kain
-				$KAIN_ID = $sql -> db_Insert("DCMS_kain", "'', '".$_POST['jeniskain'][$x]."', '', '' ");
+				$KAIN_ID = $sql -> db_Insert("DCMS_kain", "'', '".$_POST['jeniskain'][$x]."', '' ");
 			}
 
 			$ROLL = HANYA_ANGKA( $_POST['roll'][$x] );
@@ -97,20 +94,6 @@ if(isset($_POST['form_submit'])) {
 			$sql -> db_Insert("DCMS_sbg_items", "'', '".$SBG_ID."', '".$ROLL."', '".$JAR."', '".$KG."', '".$KAIN_ID."', 
 						'".$_POST['mesin'][$x]."', '".$_POST['setting'][$x]."', '".$_POST['gramasi'][$x]."', '".$HARGA."' ");
 		}
-
-		//add stock
-		/*$CEK_ID_STOCK = GET_ID_STOCK("g", $KAIN_ID);
-		if( $CEK_ID_STOCK ) {
-			$STOCK_ID = $CEK_ID_STOCK;
-			UPDATE_STOCK( $STOCK_ID, $ROLL, $JAR, $KG );
-		}
-		else {
-			$STOCK_ID = $sql -> db_Insert("DCMS_stock", "'','g', '".$KAIN_ID."', '', '".$ROLL."', '".$JAR."', '".$KG."', '".$warehouse_code."', NOW() ");
-		}
-		//add stock log
-		$sql -> db_Insert("DCMS_stock_log", "'', '".$STOCK_ID."', 'in', 'g', '".$KAIN_ID."', '', '".$ROLL."', '".$JAR."', '".$KG."', 
-					'sbg', '".$SBG_ID."', '".U_ID."', '".$warehouse_code."', NOW() ");
-		*/
 	}
 
 	return _redirect ( "./invoice?landing=".$SBG_ID );

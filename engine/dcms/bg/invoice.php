@@ -116,7 +116,7 @@ $result = $sql -> db_Fetch();
 						</thead>
 						<tbody>
 						<?php
-						$sql -> db_Select("DCMS_sbg_items I LEFT JOIN DCMS_kain K ON I.KAIN_ID=K.KAIN_ID", 
+						$sql -> db_Select("DCMS_sbg_items I LEFT JOIN DCMS_db_kain K ON I.KAIN_ID=K.KAIN_ID", 
 								"I.*, K.kain", 
 								"WHERE I.SBG_ID='".$ID."' GROUP BY I.SBGI_ID");
 						

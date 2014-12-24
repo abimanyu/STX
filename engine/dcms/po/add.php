@@ -64,7 +64,12 @@ if(isset($_POST['form_submit'])) {
 	//jika berhasil, update LAST_NO_SP
 	if($PO_ID) {
 		$sql -> db_Update("3E_taxonomy", "`value`='".$NO_SP."' WHERE `type`='dcms' AND `key`='po-last' ");
+		
+		//apps-log
+		$sql -> db_Insert("DCMS_log", "'', 'po', '".$PO_ID."', 'po', '".$PO_ID."', NOW(), 'create', '', '".U_ID."' ");
 	}
+
+	
 	
 	$Dyn = count($_POST['dyn']);
 	for($x=0; $x<$Dyn; $x++){
@@ -75,7 +80,7 @@ if(isset($_POST['form_submit'])) {
 				$KAIN_ID = $CEK_ID_KAIN;
 			}
 			else {//jika ga ada di database, tambah data kain
-				$KAIN_ID = $sql -> db_Insert("DCMS_kain", "'', '".mysql_real_escape_string($_POST['jeniskain'][$x])."', '', '' ");
+				$KAIN_ID = $sql -> db_Insert("DCMS_db_kain", "'', '".mysql_real_escape_string($_POST['jeniskain'][$x])."', '' ");
 			}
 		}
 
@@ -85,7 +90,7 @@ if(isset($_POST['form_submit'])) {
 				$WARNA_ID = $CEK_ID_WARNA;
 			}
 			else {//jika ga ada di database, tambah data warna
-				$WARNA_ID = $sql -> db_Insert("DCMS_warna", "'', '".$_POST['warna'][$x]."', '', '' ");
+				$WARNA_ID = $sql -> db_Insert("DCMS_db_warna", "'', '".$_POST['warna'][$x]."', '' ");
 			}
 		}
 
@@ -95,26 +100,18 @@ if(isset($_POST['form_submit'])) {
 			$KG = HANYA_ANGKA( $_POST['kg'][$x] );
 			$HARGA = HANYA_ANGKA( $_POST['harga'][$x] );
 
-			$sql -> db_Insert("DCMS_po_items", "'', '".$PO_ID."', '".$ROLL."', '".$JAR."', '".$KG."', '".$KAIN_ID."', '".$WARNA_ID."', 
-						'', '".$_POST['setting'][$x]."', '".$_POST['gramasi'][$x]."', '".$HARGA."' ");
-		}
+			$CEK_ID_ITEMS = GET_ID_ITEMS($KAIN_ID, $WARNA_ID);			
+			//jika ga ada di database, tambah data item
+			if( $CEK_ID_ITEMS ) {
+				$ITEM_ID = $CEK_ID_ITEMS;
+			}
+			//jika ga ada di database, tambah data item
+			else {
+				$ITEM_ID = $sql -> db_Insert("DCMS_db_items", "'', 'w', '".$KAIN_ID."', '".$WARNA_ID."' ");
+			}
 
-		
-		//AYO BERMAIN DI STOK :)
-		//add stock
-		/*
-		$CEK_ID_STOCK = GET_ID_STOCK("c", $KAIN_ID, $WARNA_ID);
-		if( $CEK_ID_STOCK ) {
-			$STOCK_ID = $CEK_ID_STOCK;
-			UPDATE_STOCK( $STOCK_ID, $ROLL, $JAR, $KG );
+			$sql -> db_Insert("DCMS_po_items", "'', '".$PO_ID."', '".$ITEM_ID."', '".$ROLL."', '".$JAR."', '".$KG."', '', '".$_POST['setting'][$x]."', '".$_POST['gramasi'][$x]."', '".$HARGA."' ");
 		}
-		else {
-			$STOCK_ID = $sql -> db_Insert("DCMS_stock", "'','c', '".$KAIN_ID."', '".$WARNA_ID."', '".$ROLL."', '".$JAR."', '".$KG."', '".$warehouse_code."', '".$NOW."' ");
-		}
-		//add stock log
-		$sql -> db_Insert("WMS_stock_log", "'', '".$STOCK_ID."', 'in', 'c', '".$KAIN_ID."', '".$WARNA_ID."', '".$ROLL."', '".$JAR."', '".$KG."', 
-					'po', '".$PO_ID."', '".U_ID."', '".$warehouse_code."', '".$NOW."' ");
-		*/
 
 	}
 

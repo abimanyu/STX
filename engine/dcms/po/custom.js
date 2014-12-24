@@ -23,7 +23,7 @@
 	$(function() {
 		$("#customer").autocomplete({
 			source: "../ajax.php?ac=customer&",
-			minLength: 2, 
+			minLength: 1, 
 			focus: function( event, ui ) {
 	           $( "#customer" ).val( decodeEntities( ui.item.nama ));
 	              return false;
@@ -47,7 +47,7 @@
 	$(function() {
 		$("#corp").autocomplete({
 			source: "../ajax.php?ac=customer&",
-			minLength: 2, 
+			minLength: 1, 
 			focus: function( event, ui ) {
 	           $( "#corp" ).val( decodeEntities( ui.item.corp ));
 	              return false;
@@ -223,7 +223,7 @@
 					icon: 'fa fa-spin fa-spinner'
 				});
 
-				$("#confirm-div").html(response);
+				$("#confirm-" + po_id).html(response);
 			}
 		 });
 	});
@@ -253,7 +253,7 @@
 					icon: 'fa fa-spin fa-spinner'
 				});
 
-				$("#confirm-div").html(response);
+				$("#confirm-" + po_id).html(response);
 			}
 		 });
 	});

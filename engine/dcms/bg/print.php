@@ -12,7 +12,7 @@
 @include (c_THEMES."conf.php");
 
 $ID = $_GET['c'];
-$sql -> db_Select("WMS_sbg G LEFT JOIN customer C ON G.C_ID=C.CID", 
+$sql -> db_Select("DCMS_sbg G LEFT JOIN customer C ON G.C_ID=C.CID", 
 					"G.SBG_ID, G.tgl_sp, G.no_sp, G.keterangan, C.c_name, C.c_corp, C.c_alamat", 
 					"WHERE G.SBG_ID='".$ID."' LIMIT 1");
 $result = $sql -> db_Fetch();
@@ -74,7 +74,7 @@ $result = $sql -> db_Fetch();
 					</thead>
 					<tbody>
 						<?php
-						$sql -> db_Select("WMS_sbg_items I LEFT JOIN WMS_kain K ON I.KAIN_ID=K.KAIN_ID", 
+						$sql -> db_Select("DCMS_sbg_items I LEFT JOIN DCMS_db_kain K ON I.KAIN_ID=K.KAIN_ID", 
 								"I.*, K.kain", 
 								"WHERE I.SBG_ID='".$ID."' GROUP BY I.SBGI_ID");
 						

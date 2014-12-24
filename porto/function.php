@@ -76,9 +76,12 @@ function ITEM_FOOT ($ITEM_FOOT) {
                     "jquery.dataTables.js"      => "\n<script src=\"".VENDOR."jquery-datatables/media/js/jquery.dataTables.js\"></script>",
                     "dataTables.tableTools.min.js"=> "\n<script src=\"".VENDOR."jquery-datatables/extras/TableTools/js/dataTables.tableTools.min.js\"></script>",
                     "datatables.js"             => "\n<script src=\"".VENDOR."jquery-datatables-bs3/assets/js/datatables.js\"></script>",
+                    "maps.js"                   => "\n<script src=\"http://maps.google.com/maps/api/js?sensor=false\"></script>",
+                    "gmaps.js"                  => "\n<script src=\"".VENDOR."gmaps/gmaps.js\"></script>",
+
+
+
                     //"bootstrap-timepicker.js"   => "\n<script src=\"".VENDOR."bootstrap-timepicker/js/bootstrap-timepicker.js\"></script>",
-
-
                     //"dropzone.js"               => "\n<script src=\"".VENDOR."dropzone/dropzone.js\"></script>",
                     "jquery.appear.js"          => "\n<script src=\"".VENDOR."jquery-appear/jquery.appear.js\"></script>",
                     "jquery.flot.pie.js"        => "\n<script src=\"".VENDOR."flot/jquery.flot.pie.js\"></script>",                    

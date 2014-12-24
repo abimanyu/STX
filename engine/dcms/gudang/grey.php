@@ -35,7 +35,7 @@ $(document).ready(function(){
 <script src=\"../datatables.js\"></script>
 <script src=\"custom.js\"></script>
 ";
-$sql -> db_Select("DCMS_stock S LEFT JOIN DCMS_kain K ON S.KAIN_ID=K.KAIN_ID", 
+$sql -> db_Select("DCMS_stock S LEFT JOIN DCMS_db_kain K ON S.KAIN_ID=K.KAIN_ID", 
 				"S.STOCK_ID, S.roll, S.jar, S.kg, S.last_update, K.kain", 
 				"WHERE `type`='g' GROUP BY S.KAIN_ID");
 
@@ -141,7 +141,6 @@ $sql -> db_Select("DCMS_stock S LEFT JOIN DCMS_kain K ON S.KAIN_ID=K.KAIN_ID",
 						$i=1;
 						while($row = $sql-> db_Fetch()){
 
-							//$customer = DISPLAY_CUSTOMER( $row['c_name'], $row['c_corp'] );
 							echo "
 							<tr>
 								<td>".$i++."</td>
